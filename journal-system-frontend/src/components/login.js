@@ -1,4 +1,3 @@
-// src/components/login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +29,10 @@ const Login = () => {
     }
   };
 
+  const navigateToRegister = () => {
+    navigate('/register');
+  };
+
   return (
     <div className="box">
       <h2>Login</h2>
@@ -56,7 +59,13 @@ const Login = () => {
         </div>
         <input type="submit" name="submit" value="Submit" />
       </form>
-      {message && <p>{message}</p>}
+      {message && <p className="errorMessage">{message}</p>}
+      <p className="registerPrompt">
+        Don't have an account?{' '}
+        <span className="registerLink" onClick={navigateToRegister}>
+          Register here
+        </span>
+      </p>
     </div>
   );
 };

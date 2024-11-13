@@ -1,126 +1,80 @@
-// src/components/Register.js
-import React, { useState } from 'react';
+import React from 'react';
+import bgImg from 'C:/Users/Simon/ProjectJournal/Journal-System/journal-system-frontend/src/img1.jpg';
+import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Container, Box, TextField, Button, Typography, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import '../Register.css';
 
-const Register = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [roles, setRoles] = useState([]);
-  const [selectedRole, setSelectedRole] = useState('');
+export default function RegisterForm() {
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
 
-  const roleOptions = [
-    'PATIENT',
-    'DOCTOR',
-    'STAFF',
-    'NURSE',
-    'PHYSIOTHERAPIST',
-    'LAB_TECHNICIAN',
-  ];
+  const onSubmit = async (data) => {
+    const { username, password, confirmpwd, mobile, role } = data;
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-
-    if (selectedRole && !roles.includes(selectedRole)) {
-      setRoles([selectedRole]);
+    if (password !== confirmpwd) {
+      alert("Passwords do not match.");
+      return;
     }
 
     try {
       const response = await axios.post('http://localhost:8080/api/register', {
         username,
         password,
-        roles,
+        roles: [role], // Send the selected role to backend as an array
+        mobile,
       });
+
       if (response.status === 201) {
-        setMessage('User registered successfully');
-        setTimeout(() => navigate('/'), 2000);
+        alert("User registered successfully");
+        navigate('/login'); // Redirect to login after registration
       }
     } catch (error) {
-      setMessage('Error during registration');
+      console.error("Registration error:", error);
+      alert("Registration failed. Please try again.");
     }
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 4,
-          padding: 2,
-          boxShadow: 3,
-          borderRadius: 2,
-          backgroundColor: '#fff',
-        }}
-      >
-        <Typography variant="h4" gutterBottom>
-          Register
-        </Typography>
+    <section>
+      <div className="register">
+        <div className="col-1">
+          <h2>Sign Up</h2>
+          <span>Register and enjoy the service</span>
 
-        <form onSubmit={handleRegister}>
-          <TextField
-            label="Username"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <TextField
-            label="Password"
-            type="password"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          
-          <Box sx={{ marginTop: 2 }}>
-            <Typography variant="h6">Select Role</Typography>
+          <form id='form' className='flex flex-col' onSubmit={handleSubmit(onSubmit)}>
+            <input type="text" {...register("username", { required: true })} placeholder='Username' />
+            {errors.username && <p className="error">Username is required</p>}
 
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Role</InputLabel>
-              <Select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                label="Role"
-              >
-                {roleOptions.map((role) => (
-                  <MenuItem key={role} value={role}>
-                    {role}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
+            <input type="password" {...register("password", { required: true })} placeholder='Password' />
+            {errors.password && <p className="error">Password is required</p>}
 
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ marginTop: 2 }}
-          >
-            Register
-          </Button>
-        </form>
+            <input type="password" {...register("confirmpwd", { required: true })} placeholder='Confirm Password' />
+            {errors.confirmpwd && <p className="error">Password confirmation is required</p>}
 
-        {message && (
-          <Typography variant="body1" sx={{ marginTop: 2, color: 'green' }}>
-            {message}
-          </Typography>
-        )}
-      </Box>
-    </Container>
+            <input type="text" {...register("mobile", { required: true, maxLength: 10 })} placeholder='Mobile Number' />
+            {errors.mobile?.type === "required" && <p className="error">Mobile Number is required</p>}
+            {errors.mobile?.type === "maxLength" && <p className="error">Max Length Exceeded</p>}
+
+            <select {...register("role", { required: true })}>
+              <option value="">Select Role</option>
+              <option value="PATIENT">Patient</option>
+              <option value="DOCTOR">Doctor</option>
+              <option value="STAFF">Staff</option>
+              <option value="NURSE">Nurse</option>
+              <option value="PHYSIOTHERAPIST">Physiotherapist</option>
+              <option value="LAB_TECHNICIAN">Lab Technician</option>
+            </select>
+            {errors.role && <p className="error">Role is required</p>}
+
+            <button className='btn' type="submit">Sign Up</button>
+          </form>
+        </div>
+
+        <div className="col-2">
+          <img src={bgImg} alt="Background" />
+        </div>
+      </div>
+    </section>
   );
-};
-
-export default Register;
+}

@@ -2,14 +2,17 @@ package com.example.journalsystem.controller;
 
 import com.example.journalsystem.bo.model.Role;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import com.example.journalsystem.bo.Service.UserService;
 import com.example.journalsystem.bo.model.User;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,7 +20,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class AuthController {
     private final UserService userService;
-
+    @Autowired
+    private AuthenticationManager authenticationManager;
     public AuthController(UserService userService) {
         this.userService = userService;
     }
@@ -34,12 +38,15 @@ public class AuthController {
     }
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginRequest) {
-        String username = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
-
-        if (username.equals("admin") && password.equals("password")) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
             return ResponseEntity.ok("Login successful");
-        } else {
+        } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
