@@ -2,18 +2,32 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../App.css';
+import { Container, Box, TextField, Button, Typography, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [roles, setRoles] = useState([]); // Array for storing roles
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState('');
   const navigate = useNavigate();
 
-  // Handle the registration form submission
+  const roleOptions = [
+    'PATIENT',
+    'DOCTOR',
+    'STAFF',
+    'NURSE',
+    'PHYSIOTHERAPIST',
+    'LAB_TECHNICIAN',
+  ];
+
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (selectedRole && !roles.includes(selectedRole)) {
+      setRoles([selectedRole]);
+    }
+
     try {
       const response = await axios.post('http://localhost:8080/api/register', {
         username,
@@ -22,7 +36,6 @@ const Register = () => {
       });
       if (response.status === 201) {
         setMessage('User registered successfully');
-        // Redirect to the login page after registration
         setTimeout(() => navigate('/'), 2000);
       }
     } catch (error) {
@@ -30,64 +43,83 @@ const Register = () => {
     }
   };
 
-  // Add or remove roles
-  const handleRoleChange = (role) => {
-    setRoles((prevRoles) =>
-      prevRoles.includes(role)
-        ? prevRoles.filter((r) => r !== role)
-        : [...prevRoles, role]
-    );
-  };
-
   return (
-    <div className="box">
-      <h2>Register</h2>
-      <form onSubmit={handleRegister}>
-        <div className="inputBox">
-          <input
-            type="text"
-            name="username"
-            required
+    <Container maxWidth="xs">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 4,
+          padding: 2,
+          boxShadow: 3,
+          borderRadius: 2,
+          backgroundColor: '#fff',
+        }}
+      >
+        <Typography variant="h4" gutterBottom>
+          Register
+        </Typography>
+
+        <form onSubmit={handleRegister}>
+          <TextField
+            label="Username"
+            variant="outlined"
+            fullWidth
+            margin="normal"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-          />
-          <label htmlFor="username">Username</label>
-        </div>
-        <div className="inputBox">
-          <input
-            type="password"
-            name="password"
             required
+          />
+          <TextField
+            label="Password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          <label htmlFor="password">Password</label>
-        </div>
+          
+          <Box sx={{ marginTop: 2 }}>
+            <Typography variant="h6">Select Role</Typography>
 
-        <div className="rolesBox">
-          <h4>Select Roles</h4>
-          <label>
-            <input
-              type="checkbox"
-              value="ROLE_USER"
-              onChange={() => handleRoleChange('ROLE_USER')}
-            />
-            User
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value="ROLE_ADMIN"
-              onChange={() => handleRoleChange('ROLE_ADMIN')}
-            />
-            Admin
-          </label>
-        </div>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Role</InputLabel>
+              <Select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+                label="Role"
+              >
+                {roleOptions.map((role) => (
+                  <MenuItem key={role} value={role}>
+                    {role}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
 
-        <input type="submit" name="submit" value="Register" />
-      </form>
-      {message && <p>{message}</p>}
-    </div>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: 2 }}
+          >
+            Register
+          </Button>
+        </form>
+
+        {message && (
+          <Typography variant="body1" sx={{ marginTop: 2, color: 'green' }}>
+            {message}
+          </Typography>
+        )}
+      </Box>
+    </Container>
   );
 };
 

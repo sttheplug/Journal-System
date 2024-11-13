@@ -30,9 +30,8 @@ public class AuthController {
     public static class RegisterUserDTO {
         private String username;
         private String password;
-        private Set<Role.RoleType> roles;
+        private Role.RoleType role;
     }
-
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginRequest) {
         String username = loginRequest.getUsername();
@@ -54,14 +53,10 @@ public class AuthController {
         User newUser = new User();
         newUser.setUsername(registerRequest.getUsername());
         newUser.setPassword(registerRequest.getPassword());
-        Set<Role> roles = registerRequest.getRoles().stream()
-                .map(roleType -> {
-                    Role role = new Role();
-                    role.setName(roleType);
-                    return role;
-                }).collect(Collectors.toSet());
-        newUser.setRoles(roles);
+        Role role = userService.findOrCreateRole(registerRequest.getRole());
+        newUser.setRole(role);
         userService.createUser(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
+
 }

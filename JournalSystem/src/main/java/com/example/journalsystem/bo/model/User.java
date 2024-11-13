@@ -23,12 +23,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "user")
-    private Set<Role> roles;
-    public User(String username, String password, Set<Role> roles) {
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+    public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
     }
 }
 
