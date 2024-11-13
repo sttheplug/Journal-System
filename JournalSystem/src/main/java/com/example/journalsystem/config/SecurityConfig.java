@@ -44,10 +44,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/register").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .permitAll()
-                )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Optional for stateless sessions in APIs
                 .csrf(AbstractHttpConfigurer::disable);

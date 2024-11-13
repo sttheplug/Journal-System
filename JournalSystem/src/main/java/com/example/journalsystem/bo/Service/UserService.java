@@ -1,9 +1,6 @@
 package com.example.journalsystem.bo.Service;
 
-import com.example.journalsystem.bo.model.Role;
 import com.example.journalsystem.bo.model.User;
-import com.example.journalsystem.db.MessageRepository;
-import com.example.journalsystem.db.RoleRepository;
 import com.example.journalsystem.db.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +9,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -44,23 +37,10 @@ public class UserService {
     /**
      * Assign a role to a user.
      */
-    public User assignRoleToUser(Long userId, Role role) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setRole(role);
-            return userRepository.save(user);
-        } else {
-            throw new EntityNotFoundException("User not found");
-        }
-    }
 
     /**
      * Find users by their role type.
-     */
-    public List<User> findByRoleType(Role.RoleType roleType) {
-        return userRepository.findByRole_Name(roleType);
-    }
+     *
 
     /**
      * Authenticate a user by username and password.
@@ -74,14 +54,6 @@ public class UserService {
             }
         }
         return Optional.empty();
-    }
-    public Role findOrCreateRole(Role.RoleType roleType) {
-        return roleRepository.findByName(roleType)
-                .orElseGet(() -> {
-                    Role newRole = new Role();
-                    newRole.setName(roleType);
-                    return roleRepository.save(newRole);
-                });
     }
 
 }
