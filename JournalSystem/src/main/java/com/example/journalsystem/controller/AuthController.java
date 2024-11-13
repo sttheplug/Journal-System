@@ -42,9 +42,7 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestBody LoginDTO loginRequest) {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
-        User user = userService.findUserByUsername(username)
-                .orElse(null);
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+        if (userService.authenticateUser(username, password)) {
             return ResponseEntity.ok("Login successful");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
@@ -63,9 +61,9 @@ public class AuthController {
         }
         User newUser = new User();
         newUser.setUsername(registerRequest.getUsername());
-        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        newUser.setPassword(registerRequest.getPassword()); // Set password without encoding
         newUser.setRole(role);
-        userService.createUser(newUser);
+        userService.createUser(newUser); // Encode happens here in UserService
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
 }
