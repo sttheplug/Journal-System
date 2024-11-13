@@ -10,7 +10,7 @@ export default function RegisterForm() {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    const { username, password, confirmpwd, mobile, role } = data;
+    const { username, password, confirmpwd, mobile, role } = data;  
 
     if (password !== confirmpwd) {
       alert("Passwords do not match.");
@@ -21,7 +21,7 @@ export default function RegisterForm() {
       const response = await axios.post('http://localhost:8080/api/register', {
         username,
         password,
-        roles: [role], // Send the selected role to backend as an array
+        role,
         mobile,
       });
 
