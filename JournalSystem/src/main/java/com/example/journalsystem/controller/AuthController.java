@@ -10,20 +10,21 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.example.journalsystem.bo.Service.UserService;
 import com.example.journalsystem.bo.model.User;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
 public class AuthController {
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    private AuthenticationManager authenticationManager;
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
     @Data
     public static class LoginDTO {
@@ -38,15 +39,13 @@ public class AuthController {
     }
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
-                            loginRequest.getPassword()
-                    )
-            );
+        String username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
+        User user = userService.findUserByUsername(username)
+                .orElse(null);
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
             return ResponseEntity.ok("Login successful");
-        } catch (AuthenticationException e) {
+        } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }

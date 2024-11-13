@@ -1,5 +1,5 @@
 import React from 'react';
-import bgImg from 'C:/Users/Simon/ProjectJournal/Journal-System/journal-system-frontend/src/img1.jpg';
+import bgImg from '../img1.jpg';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +27,7 @@ export default function RegisterForm() {
 
       if (response.status === 201) {
         alert("User registered successfully");
-        navigate('/login'); // Redirect to login after registration
+        navigate('/'); // Redirect to login after registration
       }
     } catch (error) {
       console.error("Registration error:", error);
