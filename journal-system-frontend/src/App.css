@@ -9,7 +9,7 @@
 }
 
 .App {
-    background-image: url('C:/Users/Simon/ProjectJournal/Journal-System/journal-system-frontend/src/hospital.jpg'); /* Use your existing background image here */
+    background-image: url('hospital.jpg'); /* Use your existing background image here */
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
