@@ -61,9 +61,6 @@ export default function RegisterForm() {
               <option value="PATIENT">Patient</option>
               <option value="DOCTOR">Doctor</option>
               <option value="STAFF">Staff</option>
-              <option value="NURSE">Nurse</option>
-              <option value="PHYSIOTHERAPIST">Physiotherapist</option>
-              <option value="LAB_TECHNICIAN">Lab Technician</option>
             </select>
             {errors.role && <p className="error">Role is required</p>}
 

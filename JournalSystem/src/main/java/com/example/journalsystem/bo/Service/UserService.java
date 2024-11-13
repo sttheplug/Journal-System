@@ -2,12 +2,10 @@ package com.example.journalsystem.bo.Service;
 
 import com.example.journalsystem.bo.model.User;
 import com.example.journalsystem.db.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,20 +38,18 @@ public class UserService {
 
     /**
      * Find users by their role type.
-     *
-
-    /**
+     * <p>
+     * <p>
+     * /**
      * Authenticate a user by username and password.
      */
-    public Optional<User> authenticateUser(String username, String password) {
+    public boolean authenticateUser(String username, String password) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                return Optional.of(user);
-            }
+            return passwordEncoder.matches(password, user.getPassword());
         }
-        return Optional.empty();
+        return false;
     }
 
 }
