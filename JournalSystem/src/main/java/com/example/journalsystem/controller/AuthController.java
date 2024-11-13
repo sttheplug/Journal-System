@@ -61,9 +61,9 @@ public class AuthController {
         }
         User newUser = new User();
         newUser.setUsername(registerRequest.getUsername());
-        newUser.setPassword(registerRequest.getPassword()); // Set password without encoding
+        newUser.setPassword(registerRequest.getPassword());
         newUser.setRole(role);
-        userService.createUser(newUser); // Encode happens here in UserService
+        userService.createUser(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
 }
