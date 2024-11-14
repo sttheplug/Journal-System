@@ -16,13 +16,28 @@ const Login = () => {
         username,
         password,
       });
+
       if (response.status === 200) {
-        setMessage(response.data);
-        navigate('/register'); 
+        const role = response.data.role;
+        setMessage(response.data.message);
+        
+        // Redirect based on role
+        if (role === 'PATIENT') {
+          navigate('/patient-dashboard');
+        } else if (role === 'DOCTOR') {
+          navigate('/staff-dashboard');
+        } else if (role === 'STAFF') {
+        } else {
+          navigate('/'); // Default fallback
+        }
       }
     } catch (error) {
       if (error.response) {
-        setMessage(error.response.status === 401 ? 'Invalid credentials' : `Unexpected error: ${error.response.status}`);
+        setMessage(
+          error.response.status === 401
+            ? 'Invalid credentials'
+            : `Unexpected error: ${error.response.status}`
+        );
       } else {
         setMessage('An error occurred. Please check the network or server status.');
       }
