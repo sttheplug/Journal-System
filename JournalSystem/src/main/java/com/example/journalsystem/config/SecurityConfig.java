@@ -42,6 +42,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/register").permitAll()
+                        .requestMatchers("/api/patients/*/conditions", "/api/patients/*/notes")
+                        .hasAnyRole("DOCTOR", "STAFF")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
