@@ -34,6 +34,9 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public Optional<User> findUserByPhoneNumber(String number) {
+        return userRepository.findByPhoneNumber(number);
+    }
 
     /**
      * Find users by their role type

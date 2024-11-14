@@ -36,7 +36,6 @@ export default function RegisterForm() {
       return;
     }
 
-    // Base user data common to all roles
     let userData = {
       username,
       password,
@@ -45,21 +44,11 @@ export default function RegisterForm() {
     };
 
     let url = '';
-    // Determine API endpoint and additional fields based on role
     if (role === 'PATIENT') {
-      userData = {
-        ...userData,
-        name,
-        address,
-        dateOfBirth: date_of_birth,
-      };
+      userData = { ...userData, name, address, dateOfBirth: date_of_birth };
       url = 'http://localhost:8080/api/register/patient';
     } else if (role === 'DOCTOR' || role === 'STAFF') {
-      userData = {
-        ...userData,
-        name,
-        specialty,
-      };
+      userData = { ...userData, name, specialty };
       url = 'http://localhost:8080/api/register/practitioner';
     } else {
       alert("Invalid role selected.");
@@ -67,10 +56,13 @@ export default function RegisterForm() {
     }
 
     try {
+      console.log("User Data to Submit:", userData); // Log data being sent
       const response = await axios.post(url, userData);
+      console.log("API Response:", response); // Log API response
+
       if (response.status === 201) {
         alert("User registered successfully");
-        navigate('/'); // Redirect to login after registration
+        navigate('/'); // Redirect to login after successful registration
       }
     } catch (error) {
       console.error("Registration error:", error);

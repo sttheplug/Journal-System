@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("/api/register").permitAll()
+                        .requestMatchers("/api/register/**").permitAll() // Allow specific register endpoints
                         .requestMatchers("/api/patients").permitAll()
                         .anyRequest().authenticated()
                 )

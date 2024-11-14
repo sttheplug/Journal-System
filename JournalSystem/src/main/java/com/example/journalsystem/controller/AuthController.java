@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3001")
 public class AuthController {
 
     private final UserService userService;
@@ -81,9 +81,14 @@ public class AuthController {
 
     @PostMapping("/register/patient")
     public ResponseEntity<String> registerPatient(@RequestBody RegisterPatientDTO registerRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+        // Check if username already exists
+        if (userService.findUserByUsername(registerRequest.getUsername()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists.");
+        }
+
+        // Check if phone number already exists
+        if (userService.findUserByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Phone number already exists.");
         }
 
         // Validate role
@@ -91,57 +96,73 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid role for patient registration");
         }
 
-        // Create and save User entity
+        // Create User entity and encode password
         User newUser = new User();
         newUser.setUsername(registerRequest.getUsername());
         newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         newUser.setPhoneNumber(registerRequest.getPhoneNumber());
         newUser.setRole(registerRequest.getRole());
 
-        User savedUser = userService.createUser(newUser);
+        try {
+            User savedUser = userService.createUser(newUser);
 
-        // Create and save Patient entity
-        Patient patient = new Patient();
-        patient.setId(savedUser.getId());
-        patient.setUser(savedUser);
-        patient.setName(registerRequest.getName());
-        patient.setAddress(registerRequest.getAddress());
-        patient.setDateOfBirth(registerRequest.getDateOfBirth());
-        patientService.createPatient(patient);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Patient registered successfully");
+            // Create Patient record
+            Patient patient = new Patient();
+            patient.setId(savedUser.getId());
+            patient.setUser(savedUser);
+            patient.setName(registerRequest.getName());
+            patient.setAddress(registerRequest.getAddress());
+            patient.setDateOfBirth(registerRequest.getDateOfBirth());
+            patientService.createPatient(patient);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("Patient registered successfully");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register patient. Please try again.");
+        }
     }
 
     @PostMapping("/register/practitioner")
     public ResponseEntity<String> registerPractitioner(@RequestBody RegisterPractitionerDTO registerRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+
+        // Check if username already exists
+        if (userService.findUserByUsername(registerRequest.getUsername()).isPresent()) {
+            System.out.println("Username already exists.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists.");
         }
 
-        // Validate role - make sure it is not PATIENT
+        // Check if phone number already exists
+        if (userService.findUserByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Phone number already exists.");
+        }
+
+        // Validate role
         if (registerRequest.getRole() == Role.PATIENT) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid role for practitioner registration");
         }
 
-        // Create and save User entity
+        // Create User entity and encode password
         User newUser = new User();
         newUser.setUsername(registerRequest.getUsername());
         newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         newUser.setPhoneNumber(registerRequest.getPhoneNumber());
         newUser.setRole(registerRequest.getRole());
 
-        User savedUser = userService.createUser(newUser);
+        try {
+            User savedUser = userService.createUser(newUser);
 
-        // Create and save Practitioner entity
-        Practitioner practitioner = new Practitioner();
-        practitioner.setId(savedUser.getId()); // Same ID as User
-        practitioner.setUser(savedUser);
-        practitioner.setName(registerRequest.getName());
-        practitioner.setSpecialty(registerRequest.getSpecialty());
+            // Create Practitioner record
+            Practitioner practitioner = new Practitioner();
+            practitioner.setUser(savedUser);
+            practitioner.setName(registerRequest.getName());
+            practitioner.setSpecialty(registerRequest.getSpecialty());
+            practitionerService.createPractitioner(practitioner);
 
-        practitionerService.createPractitioner(practitioner);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Practitioner registered successfully");
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Practitioner registered successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register practitioner. Please try again.");
+        }
     }
 
     @GetMapping("/patients")
