@@ -1,11 +1,13 @@
 package com.example.journalsystem.bo.Service;
 
+import com.example.journalsystem.bo.model.Role;
 import com.example.journalsystem.bo.model.User;
 import com.example.journalsystem.db.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,15 +34,15 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    /**
-     * Assign a role to a user.
-     */
 
     /**
-     * Find users by their role type.
-     * <p>
-     * <p>
-     * /**
+     * Find users by their role type
+     *
+     */
+    public List<User> findByRole(Role role) {
+        return userRepository.findAllByRole(role);
+    }
+     /**
      * Authenticate a user by username and password.
      */
     public boolean authenticateUser(String username, String password) {

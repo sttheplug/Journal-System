@@ -25,9 +25,8 @@ const Login = () => {
         if (role === 'PATIENT') {
           navigate('/patient-dashboard');
         } else if (role === 'DOCTOR') {
-          navigate('/doctor-dashboard');
-        } else if (role === 'STAFF') {
           navigate('/staff-dashboard');
+        } else if (role === 'STAFF') {
         } else {
           navigate('/'); // Default fallback
         }

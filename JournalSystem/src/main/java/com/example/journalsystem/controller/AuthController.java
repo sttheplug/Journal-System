@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -72,5 +73,15 @@ public class AuthController {
         newUser.setRole(role);
         userService.createUser(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+    }
+
+    @GetMapping("/patients")
+    public ResponseEntity<List<User>> getAllPatients() {
+        List<User> patients = userService.findByRole(Role.PATIENT);
+        System.out.println("Number of patients found: " + patients.size()); // Log the number of patients found
+        if (patients.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(patients);
     }
 }
