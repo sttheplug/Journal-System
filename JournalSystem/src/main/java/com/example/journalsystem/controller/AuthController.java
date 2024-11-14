@@ -105,10 +105,7 @@ public class AuthController {
 
         try {
             User savedUser = userService.createUser(newUser);
-
-            // Create Patient record
             Patient patient = new Patient();
-            patient.setId(savedUser.getId());
             patient.setUser(savedUser);
             patient.setName(registerRequest.getName());
             patient.setAddress(registerRequest.getAddress());
@@ -124,24 +121,16 @@ public class AuthController {
 
     @PostMapping("/register/practitioner")
     public ResponseEntity<String> registerPractitioner(@RequestBody RegisterPractitionerDTO registerRequest) {
-
-        // Check if username already exists
         if (userService.findUserByUsername(registerRequest.getUsername()).isPresent()) {
             System.out.println("Username already exists.");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists.");
         }
-
-        // Check if phone number already exists
         if (userService.findUserByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Phone number already exists.");
         }
-
-        // Validate role
         if (registerRequest.getRole() == Role.PATIENT) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid role for practitioner registration");
         }
-
-        // Create User entity and encode password
         User newUser = new User();
         newUser.setUsername(registerRequest.getUsername());
         newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));

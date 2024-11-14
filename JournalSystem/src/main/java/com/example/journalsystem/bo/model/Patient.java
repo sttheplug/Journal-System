@@ -12,6 +12,7 @@ import lombok.Setter;
 public class Patient {
 
     @Id
+    @Column(name = "id")
     private Long id; // This ID will be the same as the User's ID
 
     private String name;
