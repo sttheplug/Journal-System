@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import bgImg from '../img1.jpg';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
@@ -8,23 +8,66 @@ import '../Register.css';
 export default function RegisterForm() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
+  const [selectedRole, setSelectedRole] = useState('');
+
+  // Hardcoded list of specialties (can be fetched from an API)
+  const specialties = [
+    "Cardiology",
+    "Neurology",
+    "Pediatrics",
+    "Orthopedics",
+    "Dermatology",
+    "General Medicine",
+    "Psychiatry",
+    "Surgery",
+    "Security",
+    "Receptionist",
+    "Janitorial & housekeeping",
+    "Maintenance",
+    "IT Support",
+  ];
 
   const onSubmit = async (data) => {
-    const { username, password, confirmpwd, mobile, role } = data;  
+    const { username, password, confirmpwd, mobile, role, specialty, name, address, date_of_birth } = data;
 
+    // Password confirmation check
     if (password !== confirmpwd) {
       alert("Passwords do not match.");
       return;
     }
 
-    try {
-      const response = await axios.post('http://localhost:8080/api/register', {
-        username,
-        password,
-        role,
-        mobile,
-      });
+    // Base user data common to all roles
+    let userData = {
+      username,
+      password,
+      phoneNumber: mobile,
+      role,
+    };
 
+    let url = '';
+    // Determine API endpoint and additional fields based on role
+    if (role === 'PATIENT') {
+      userData = {
+        ...userData,
+        name,
+        address,
+        dateOfBirth: date_of_birth,
+      };
+      url = 'http://localhost:8080/api/register/patient';
+    } else if (role === 'DOCTOR' || role === 'STAFF') {
+      userData = {
+        ...userData,
+        name,
+        specialty,
+      };
+      url = 'http://localhost:8080/api/register/practitioner';
+    } else {
+      alert("Invalid role selected.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(url, userData);
       if (response.status === 201) {
         alert("User registered successfully");
         navigate('/'); // Redirect to login after registration
@@ -43,6 +86,7 @@ export default function RegisterForm() {
           <span>Register and enjoy the service</span>
 
           <form id='form' className='flex flex-col' onSubmit={handleSubmit(onSubmit)}>
+            {/* Common Fields */}
             <input type="text" {...register("username", { required: true })} placeholder='Username' />
             {errors.username && <p className="error">Username is required</p>}
 
@@ -56,13 +100,43 @@ export default function RegisterForm() {
             {errors.mobile?.type === "required" && <p className="error">Mobile Number is required</p>}
             {errors.mobile?.type === "maxLength" && <p className="error">Max Length Exceeded</p>}
 
-            <select {...register("role", { required: true })}>
+            <select {...register("role", { required: true })} onChange={(e) => setSelectedRole(e.target.value)}>
               <option value="">Select Role</option>
               <option value="PATIENT">Patient</option>
               <option value="DOCTOR">Doctor</option>
               <option value="STAFF">Staff</option>
             </select>
             {errors.role && <p className="error">Role is required</p>}
+
+            {/* Patient-Specific Fields */}
+            {selectedRole === 'PATIENT' && (
+              <>
+                <input type="text" {...register("name", { required: true })} placeholder='Name' />
+                {errors.name && <p className="error">Name is required</p>}
+
+                <input type="text" {...register("address", { required: true })} placeholder='Address' />
+                {errors.address && <p className="error">Address is required</p>}
+
+                <input type="text" {...register("date_of_birth", { required: true })} placeholder='Date of Birth (YYYY-MM-DD)' />
+                {errors.date_of_birth && <p className="error">Date of Birth is required</p>}
+              </>
+            )}
+
+            {/* Doctor or Staff Specific Specialty Dropdown */}
+            {(selectedRole === 'DOCTOR' || selectedRole === 'STAFF') && (
+              <>
+                <input type="text" {...register("name", { required: true })} placeholder='Name' />
+                {errors.name && <p className="error">Name is required</p>}
+
+                <select {...register("specialty", { required: true })}>
+                  <option value="">Select Specialty</option>
+                  {specialties.map((specialty, index) => (
+                    <option key={index} value={specialty}>{specialty}</option>
+                  ))}
+                </select>
+                {errors.specialty && <p className="error">Specialty is required</p>}
+              </>
+            )}
 
             <button className='btn' type="submit">Sign Up</button>
           </form>

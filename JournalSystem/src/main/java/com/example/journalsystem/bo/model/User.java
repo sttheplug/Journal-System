@@ -22,13 +22,17 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(unique = true)
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
-    public User(String username, String password, Role role) {
+    public User(String username, String password, String phoneNumber,Role role) {
         this.username = username;
         this.password = password;
+        this.phoneNumber = phoneNumber;
         this.role = role;
     }
 }

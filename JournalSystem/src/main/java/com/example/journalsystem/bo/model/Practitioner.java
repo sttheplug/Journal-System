@@ -12,20 +12,20 @@ import lombok.Setter;
 public class Practitioner {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
-    private Long id;
+    private Long id; // This ID will be the same as the User's ID
 
     private String name;
     private String specialty;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @OneToOne
+    @MapsId // Use the same ID as the User entity
+    @JoinColumn(name = "id") // Maps the 'id' field to the User's ID
+    private User user;
 
-    public Practitioner(String name, String specialty, Organization organization) {
+    public Practitioner(String name, String specialty, User user) {
         this.name = name;
         this.specialty = specialty;
-        this.organization = organization;
+        this.user = user;
+        this.id = user.getId(); // Set ID same as User ID
     }
 }
