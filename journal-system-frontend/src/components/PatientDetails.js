@@ -41,15 +41,15 @@ const PatientDetails = () => {
   };
 
   return (
-    <div>
+    <div className="box"> {/* Apply the 'box' class here to inherit the styles */}
       <h2>Patient Details</h2>
-
+  
       {/* Display loading state */}
       {loading && <p>Loading...</p>}
-
+  
       {/* Display error message */}
       {error && <p className="error">{error}</p>}
-
+  
       {/* Display patient details */}
       {patientDetails && (
         <div>
