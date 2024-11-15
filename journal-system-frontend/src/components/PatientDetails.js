@@ -1,97 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './PatientDetails.css'; // Assuming you're using some basic CSS for styling
 
 const PatientDetails = () => {
-  // State to store patient details, error, and form input data
-  const [patientDetails, setPatientDetails] = useState({});
-  const [error, setError] = useState(null);
-  const [username, setUsername] = useState('');
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [patientDetails, setPatientDetails] = useState(null); // State to store patient details
+  const [error, setError] = useState(null); // State for handling errors
+  const [loading, setLoading] = useState(false); // State for loading indicator
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const username = localStorage.getItem('username'); // Retrieve username from localStorage
 
-    // Prepare the data to send to the backend
-    const requestData = {
-      username,
-      name,
-      address,
-      dateOfBirth,
-    };
+    if (username) {
+      fetchPatientDetails(username); // Fetch patient details if username exists
+    } else {
+      setError('User not logged in.');
+    }
+  }, []); // Empty dependency array ensures this effect runs only once after the component mounts
+
+  // Function to fetch patient details from the backend
+  const fetchPatientDetails = async (username) => {
+    setLoading(true); // Start loading
 
     try {
-      // Send a POST request to the backend with the full patient data
-      const response = await axios.post('http://localhost:8080/api/patient/details', requestData, {
+      const response = await axios.get('http://localhost:8080/api/patient/details', {
         headers: {
-          'Content-Type': 'application/json',
+          Username: username, // Add the username to the request headers
         },
       });
 
-      // Handle success response and update the patient details state
+      // Update the state with the patient details
       setPatientDetails(response.data);
-    } catch (error) {
-      // Handle error response and display the error message
-      if (error.response) {
-        setError(error.response.data);
-      } else {
-        setError('An error occurred. Please try again later.');
-      }
+      setError(null); // Clear any previous error messages
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'An error occurred.'; // Safely extract the message
+      setError(errorMessage); // Only set the error message, not the whole object
+      setPatientDetails(null); // Clear patient details if there's an error
+    } finally {
+      setLoading(false); // Stop loading after request finishes
     }
   };
 
   return (
     <div>
-      <h2>Get Patient Details</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)} // Set username state
-            required
-          />
-        </div>
+      <h2>Patient Details</h2>
 
-        <div>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)} // Set name state
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="address">Address:</label>
-          <input
-            type="text"
-            id="address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)} // Set address state
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="dateOfBirth">Date of Birth:</label>
-          <input
-            type="date"
-            id="dateOfBirth"
-            value={dateOfBirth}
-            onChange={(e) => setDateOfBirth(e.target.value)} // Set date of birth state
-            required
-          />
-        </div>
-
-        <button type="submit">Get Patient Details</button>
-      </form>
+      {/* Display loading state */}
+      {loading && <p>Loading...</p>}
 
       {/* Display error message */}
       {error && <p className="error">{error}</p>}
@@ -99,7 +53,7 @@ const PatientDetails = () => {
       {/* Display patient details */}
       {patientDetails && (
         <div>
-          <h3>Patient Details</h3>
+          <h3>Patient Information</h3>
           <p><strong>Username:</strong> {patientDetails.username}</p>
           <p><strong>Name:</strong> {patientDetails.name}</p>
           <p><strong>Address:</strong> {patientDetails.address}</p>

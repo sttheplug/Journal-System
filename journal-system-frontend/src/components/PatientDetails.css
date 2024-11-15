@@ -1,0 +1,63 @@
+/* Container for the dashboard */
+.dashboard-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9; /* Light grey background to make the white list stand out */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Header */
+  .dashboard-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Patient list container */
+  .patient-list {
+    background-color: #ffffff; /* White background for the list */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Individual patient item */
+  .patient-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer; /* Makes the row clickable */
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Last item should not have a bottom border */
+  .patient-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* Patient name and role */
+  .patient-name {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .patient-role {
+    color: #777;
+  }
+  
+  /* Hover effect for each patient item */
+  .patient-item:hover {
+    background-color: #f1f1f1; /* Light grey background when hovered */
+  }
+  
+  /* Error message styling */
+  .error {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+  }
+  

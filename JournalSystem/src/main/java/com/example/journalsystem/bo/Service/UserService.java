@@ -4,7 +4,6 @@ import com.example.journalsystem.bo.model.Role;
 import com.example.journalsystem.bo.model.User;
 import com.example.journalsystem.model.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +15,11 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     /**
      * Create a new user, encoding the password before saving.
      */
     public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(user.getPassword());
         return userRepository.save(user);
     }
 
@@ -52,7 +48,7 @@ public class UserService {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            return passwordEncoder.matches(password, user.getPassword());
+            return password.equals(user.getPassword());
         }
         return false;
     }

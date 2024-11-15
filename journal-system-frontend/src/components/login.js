@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../App.css';
+import '../App.css'; // Import App.css to access the styles
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -13,16 +13,19 @@ const Login = () => {
     e.preventDefault();
     try {
       // Send the login request to the backend
-      const response = await axios.post('http://localhost:8080/api/login', {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        'http://localhost:8080/api/login', // Adjusted the endpoint
+        { username, password },
+        {
+          withCredentials: true, // Ensure cookies are sent with the request
+        }
+      );
 
       if (response.status === 200) {
-        const { role, message, username } = response.data; // Destructure the response to get the username
+        const { role, message, username } = response.data; // Destructure the response
 
         // Store the username in localStorage
-        localStorage.setItem('username', username); // You can also use sessionStorage here if you want the username to persist only during the session
+        localStorage.setItem('username', username); // You can also use sessionStorage here if you prefer
 
         setMessage(message); // Display the response message
 
