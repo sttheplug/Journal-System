@@ -1,7 +1,7 @@
 package com.example.journalsystem.bo.Service;
 
 import com.example.journalsystem.bo.model.User;
-import com.example.journalsystem.db.UserRepository;
+import com.example.journalsystem.model.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

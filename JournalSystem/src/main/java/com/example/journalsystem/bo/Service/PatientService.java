@@ -1,7 +1,7 @@
 package com.example.journalsystem.bo.Service;
 
 import com.example.journalsystem.bo.model.Patient;
-import com.example.journalsystem.db.PatientRepository;
+import com.example.journalsystem.model.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

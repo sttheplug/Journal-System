@@ -81,27 +81,24 @@ public class AuthController {
 
     @PostMapping("/register/patient")
     public ResponseEntity<String> registerPatient(@RequestBody RegisterPatientDTO registerRequest) {
-        // Check if username already exists
         if (userService.findUserByUsername(registerRequest.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists.");
         }
 
-        // Check if phone number already exists
         if (userService.findUserByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Phone number already exists.");
         }
 
-        // Validate role
         if (registerRequest.getRole() != Role.PATIENT) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid role for patient registration");
         }
 
-        // Create User entity and encode password
         User newUser = new User();
         newUser.setUsername(registerRequest.getUsername());
-        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        newUser.setPassword(registerRequest.getPassword());
         newUser.setPhoneNumber(registerRequest.getPhoneNumber());
         newUser.setRole(registerRequest.getRole());
+
 
         try {
             User savedUser = userService.createUser(newUser);
@@ -133,7 +130,7 @@ public class AuthController {
         }
         User newUser = new User();
         newUser.setUsername(registerRequest.getUsername());
-        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        newUser.setPassword(registerRequest.getPassword());
         newUser.setPhoneNumber(registerRequest.getPhoneNumber());
         newUser.setRole(registerRequest.getRole());
 

@@ -1,4 +1,4 @@
-package com.example.journalsystem.db;
+package com.example.journalsystem.model;
 import com.example.journalsystem.bo.model.Role;
 import com.example.journalsystem.bo.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
