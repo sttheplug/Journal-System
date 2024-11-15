@@ -12,26 +12,33 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      // Send the login request to the backend
       const response = await axios.post('http://localhost:8080/api/login', {
         username,
         password,
       });
 
       if (response.status === 200) {
-        const role = response.data.role;
-        setMessage(response.data.message);
-        
-        // Redirect based on role
+        const { role, message, username } = response.data; // Destructure the response to get the username
+
+        // Store the username in localStorage
+        localStorage.setItem('username', username); // You can also use sessionStorage here if you want the username to persist only during the session
+
+        setMessage(message); // Display the response message
+
+        // Redirect based on the user's role
         if (role === 'PATIENT') {
-          navigate('/patient-dashboard');
+          navigate('/patient-details');
         } else if (role === 'DOCTOR') {
           navigate('/staff-dashboard');
         } else if (role === 'STAFF') {
+          // Add logic for staff if necessary
         } else {
-          navigate('/'); // Default fallback
+          navigate('/'); // Fallback in case of an unknown role
         }
       }
     } catch (error) {
+      // Handle errors in the login process
       if (error.response) {
         setMessage(
           error.response.status === 401
@@ -45,7 +52,7 @@ const Login = () => {
   };
 
   const navigateToRegister = () => {
-    navigate('/register');
+    navigate('/register'); // Navigate to the registration page if the user doesn't have an account
   };
 
   return (
@@ -58,7 +65,7 @@ const Login = () => {
             name="username"
             required
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)} // Handle username change
           />
           <label htmlFor="username">Username</label>
         </div>
@@ -68,13 +75,13 @@ const Login = () => {
             name="password"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)} // Handle password change
           />
           <label htmlFor="password">Password</label>
         </div>
         <input type="submit" name="submit" value="Submit" />
       </form>
-      {message && <p className="errorMessage">{message}</p>}
+      {message && <p className="errorMessage">{message}</p>} {/* Display error or success message */}
       <p className="registerPrompt">
         Don't have an account?{' '}
         <span className="registerLink" onClick={navigateToRegister}>
