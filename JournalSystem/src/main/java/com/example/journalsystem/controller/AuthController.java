@@ -16,9 +16,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.example.journalsystem.bo.Service.UserUtil.getCurrentAuthenticatedUser;
 
 @RestController
 @RequestMapping("/api")
@@ -64,7 +67,6 @@ public class AuthController {
         private String name;
         private String specialty;
     }
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginRequest) {
         String username = loginRequest.getUsername();
@@ -80,26 +82,21 @@ public class AuthController {
     }
 
     @PostMapping("/register/patient")
-    public ResponseEntity<String> registerPatient(@RequestBody RegisterPatientDTO registerRequest) {
+    public ResponseEntity<?> registerPatient(@RequestBody RegisterPatientDTO registerRequest) {
         if (userService.findUserByUsername(registerRequest.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists.");
         }
-
         if (userService.findUserByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Phone number already exists.");
         }
-
         if (registerRequest.getRole() != Role.PATIENT) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid role for patient registration");
         }
-
         User newUser = new User();
         newUser.setUsername(registerRequest.getUsername());
         newUser.setPassword(registerRequest.getPassword());
         newUser.setPhoneNumber(registerRequest.getPhoneNumber());
         newUser.setRole(registerRequest.getRole());
-
-
         try {
             User savedUser = userService.createUser(newUser);
             Patient patient = new Patient();
@@ -108,9 +105,17 @@ public class AuthController {
             patient.setAddress(registerRequest.getAddress());
             patient.setDateOfBirth(registerRequest.getDateOfBirth());
             patientService.createPatient(patient);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body("Patient registered successfully");
-
+            Map<String, Object> response = Map.of(
+                    "message", "Patient registered successfully",
+                    "patientDetails", Map.of(
+                            "username", savedUser.getUsername(),
+                            "name", patient.getName(),
+                            "address", patient.getAddress(),
+                            "phoneNumber", savedUser.getPhoneNumber(),
+                            "dateOfBirth", patient.getDateOfBirth()
+                    )
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register patient. Please try again.");
         }
@@ -133,11 +138,8 @@ public class AuthController {
         newUser.setPassword(registerRequest.getPassword());
         newUser.setPhoneNumber(registerRequest.getPhoneNumber());
         newUser.setRole(registerRequest.getRole());
-
         try {
             User savedUser = userService.createUser(newUser);
-
-            // Create Practitioner record
             Practitioner practitioner = new Practitioner();
             practitioner.setUser(savedUser);
             practitioner.setName(registerRequest.getName());
@@ -154,10 +156,34 @@ public class AuthController {
     @GetMapping("/patients")
     public ResponseEntity<List<User>> getAllPatients() {
         List<User> patients = userService.findByRole(Role.PATIENT);
-        System.out.println("Number of patients found: " + patients.size()); // Log the number of patients found
+        System.out.println("Number of patients found: " + patients.size());
         if (patients.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(patients);
     }
+
+    @GetMapping("/patient/details")
+    public ResponseEntity<?> getPatientDetails(@RequestBody RegisterPatientDTO request) {
+        String username = request.getUsername();
+        Optional<User> userOptional = userService.findUserByUsername(username);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+        User user = userOptional.get();
+        Optional<Patient> patientOptional = patientService.findPatientByUser(user);
+        if (patientOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient details not found.");
+        }
+        Patient patient = patientOptional.get();
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("username", user.getUsername());
+        responseData.put("name", patient.getName());
+        responseData.put("address", patient.getAddress());
+        responseData.put("phoneNumber", user.getPhoneNumber());
+        responseData.put("dateOfBirth", patient.getDateOfBirth());
+        return ResponseEntity.ok(responseData);
+    }
+
+
 }

@@ -7,6 +7,7 @@ import './Register.css';
 import Login from './components/login';
 import Register from './components/register';
 import StaffDashboard from './components/StaffDashboard';
+import PatientDetails from './components/PatientDetails';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/staff-dashboard" element={<StaffDashboard />} />
+            <Route path="/patient-details" element={<PatientDetails />} />
           </Routes>
         </Router>
       </header>

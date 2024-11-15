@@ -12,7 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -43,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/register/**").permitAll() // Allow specific register endpoints
                         .requestMatchers("/api/patients").permitAll()
+                        .requestMatchers("/api/patient/details").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -50,5 +53,26 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:3001"); // Allow your React frontend origin
+        config.addAllowedHeader("*"); // Allow all headers
+        config.addAllowedMethod("*"); // Allow all HTTP methods
+        config.setAllowCredentials(true); // Allow cookies or Authorization headers
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
 
+    private UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3001");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

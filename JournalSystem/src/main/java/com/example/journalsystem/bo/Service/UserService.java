@@ -23,7 +23,7 @@ public class UserService {
      * Create a new user, encoding the password before saving.
      */
     public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encode password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -56,5 +56,4 @@ public class UserService {
         }
         return false;
     }
-
 }
