@@ -188,5 +188,21 @@ public class AuthController {
         return ResponseEntity.ok(responseData);
     }
 
+    @GetMapping("/patient/details/{patientId}")
+    public ResponseEntity<?> getPatientDetailsById(@PathVariable Long patientId) {
+        Optional<Patient> patientOptional = patientService.findPatientById(patientId);
+        if (patientOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found.");
+        }
+        Patient patient = patientOptional.get();
+        User user = patient.getUser();
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("username", user.getUsername());
+        responseData.put("name", patient.getName());
+        responseData.put("address", patient.getAddress());
+        responseData.put("phoneNumber", user.getPhoneNumber());
+        responseData.put("dateOfBirth", patient.getDateOfBirth());
+        return ResponseEntity.ok(responseData);
+    }
 
 }

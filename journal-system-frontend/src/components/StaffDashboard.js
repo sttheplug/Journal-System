@@ -11,13 +11,9 @@ const StaffDashboard = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        const response = await axios.get('http://localhost:8080/api/patients', {
-          headers: {
-            Authorization: `Bearer ${token}`, // Ensure the token is sent if required by the backend
-          },
-        });
+        const response = await axios.get('http://localhost:8080/api/patients');
         setPatients(response.data);
+        setError('');
       } catch (err) {
         setError('Failed to load patients. Please try again later.');
       }
@@ -26,10 +22,9 @@ const StaffDashboard = () => {
     fetchPatients();
   }, []);
 
-  const handlePatientClick = (patient) => {
-    // Add logic here for what happens when a patient row is clicked
-    // For example, redirect to a patient detail page or display more info
-    navigate('/PatientDetails');
+  const handlePatientClick = (patientId) => {
+    // Redirect to the PatientDetails page with the patient ID as a route parameter
+    navigate(`/patient-details/${patientId}`);
   };
 
   return (
@@ -42,7 +37,7 @@ const StaffDashboard = () => {
             <div
               key={patient.id}
               className="patient-item"
-              onClick={() => handlePatientClick(patient)}
+              onClick={() => handlePatientClick(patient.id)} // Pass patient ID on click
             >
               <span className="patient-name">{patient.username}</span>
               <span className="patient-role">{patient.role}</span>

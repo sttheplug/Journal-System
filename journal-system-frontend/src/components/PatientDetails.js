@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './PatientDetails.css'; // Assuming you're using some basic CSS for styling
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 
 const PatientDetails = () => {
   const [patientDetails, setPatientDetails] = useState(null); // State to store patient details
   const [error, setError] = useState(null); // State for handling errors
   const [loading, setLoading] = useState(false); // State for loading indicator
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   useEffect(() => {
     const username = localStorage.getItem('username'); // Retrieve username from localStorage
@@ -39,6 +41,9 @@ const PatientDetails = () => {
       setLoading(false); // Stop loading after request finishes
     }
   };
+  const handleMessageClick = () => {
+     navigate('/message'); 
+  };
 
   return (
     <div className="box"> {/* Apply the 'box' class here to inherit the styles */}
@@ -61,6 +66,11 @@ const PatientDetails = () => {
           <p><strong>Date of Birth:</strong> {patientDetails.dateOfBirth}</p>
         </div>
       )}
+  
+      {/* Message Button */}
+      <button className="message-btn" onClick={handleMessageClick}>
+        Send Message!
+      </button>
     </div>
   );
 };

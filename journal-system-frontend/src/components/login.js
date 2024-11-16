@@ -24,7 +24,7 @@ const Login = () => {
       if (response.status === 200) {
         const { role, message, username } = response.data; // Destructure the response
 
-        // Store the username in localStorage
+        localStorage.setItem('role', role);
         localStorage.setItem('username', username); // You can also use sessionStorage here if you prefer
 
         setMessage(message); // Display the response message

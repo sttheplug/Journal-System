@@ -39,3 +39,18 @@ strong {
     color: rgb(144, 146, 164); /* Make labels white */
     margin-right: 10px; /* Space between label and value */
 }
+.message-btn {
+  background-color: #236a8a; /* Blue background */
+  color: white; /* White text */
+  padding: 10px 20px; /* Add padding for better button size */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px; /* Adjust font size */
+  margin-top: 20px; /* Add space above the button */
+  transition: background-color 0.3s ease;
+}
+
+.message-btn:hover {
+  background-color: #113041; /* Darker blue when hovered */
+}
