@@ -21,7 +21,7 @@
 
 /* Centered, semi-transparent login box with new style */
 .box {
-    width: 400px;
+    width: 380px;
     padding: 40px;
     background: rgba(0, 0, 0, .7); /* Semi-transparent dark background */
     box-shadow: 0 15px 25px rgba(0, 0, 0, .5); /* Deep shadow for depth */

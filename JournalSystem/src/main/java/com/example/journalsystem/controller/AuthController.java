@@ -1,12 +1,10 @@
 package com.example.journalsystem.controller;
 
+import com.example.journalsystem.bo.Service.MessageService;
 import com.example.journalsystem.bo.Service.PatientService;
 import com.example.journalsystem.bo.Service.PractitionerService;
-import com.example.journalsystem.bo.model.Patient;
-import com.example.journalsystem.bo.model.Practitioner;
-import com.example.journalsystem.bo.model.Role;
+import com.example.journalsystem.bo.model.*;
 import com.example.journalsystem.bo.Service.UserService;
-import com.example.journalsystem.bo.model.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +23,15 @@ import java.util.Optional;
 public class AuthController {
 
     private final UserService userService;
-    private final PatientService patientService; // Uncomment and use PatientService
-    private final PractitionerService practitionerService; // Uncomment and use PractitionerService
+    private final PatientService patientService;
+    private final PractitionerService practitionerService;
+    private final MessageService messageService;
     @Autowired
-    public AuthController(UserService userService, PatientService patientService, PractitionerService practitionerService) {
+    public AuthController(UserService userService, PatientService patientService, PractitionerService practitionerService, MessageService messageService) {
         this.userService = userService;
         this.patientService = patientService;
         this.practitionerService = practitionerService;
+        this.messageService = messageService;
     }
 
     @Data
@@ -60,6 +60,10 @@ public class AuthController {
         private String name;
         private String specialty;
     }
+    @Data
+    public static class MessageRequest {
+        private String message;
+    }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginRequest, HttpSession session) {
         String username = loginRequest.getUsername();
@@ -73,6 +77,7 @@ public class AuthController {
                 response.put("message", "Login successful");
                 response.put("role", user.getRole().toString());
                 response.put("username", user.getUsername());
+                response.put("id", user.getId());
                 return ResponseEntity.ok(response);
             }
         }
@@ -163,28 +168,22 @@ public class AuthController {
 
     @GetMapping("/patient/details")
     public ResponseEntity<?> getPatientDetails(@RequestHeader("Username") String username) {
-        // Find the user by the provided username
         Optional<User> userOptional = userService.findUserByUsername(username);
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
         User user = userOptional.get();
-
-        // Find the patient's details associated with the user
         Optional<Patient> patientOptional = patientService.findPatientByUser(user);
         if (patientOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient details not found.");
         }
         Patient patient = patientOptional.get();
-
-        // Prepare response
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("username", user.getUsername());
         responseData.put("name", patient.getName());
         responseData.put("address", patient.getAddress());
         responseData.put("phoneNumber", user.getPhoneNumber());
         responseData.put("dateOfBirth", patient.getDateOfBirth());
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -203,6 +202,35 @@ public class AuthController {
         responseData.put("phoneNumber", user.getPhoneNumber());
         responseData.put("dateOfBirth", patient.getDateOfBirth());
         return ResponseEntity.ok(responseData);
+    }
+    @GetMapping("/practitioners")
+    public ResponseEntity<List<Practitioner>> getAllPractitioners() {
+        List<Practitioner> practitioners = practitionerService.findPractitioners();
+        if (practitioners.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(practitioners);
+    }
+    @PostMapping("/practitioners/{practitionerId}/message")
+    public ResponseEntity<String> sendMessageToPractitioner(
+            @PathVariable Long practitionerId,
+            @RequestParam Long senderId,
+            @RequestBody String messageContent) {
+        try {
+            messageService.sendMessage(senderId, practitionerId, messageContent);
+            return ResponseEntity.ok("Message sent successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to send message: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/messages/recipient")
+    public ResponseEntity<List<Message>> getMessagesForRecipient(@RequestHeader("userId") Long userId) {
+        List<Message> messages = messageService.getMessagesForRecipient(userId);
+        if (messages == null || messages.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(messages);
     }
 
 }

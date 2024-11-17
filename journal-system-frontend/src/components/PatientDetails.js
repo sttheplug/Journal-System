@@ -41,20 +41,25 @@ const PatientDetails = () => {
       setLoading(false); // Stop loading after request finishes
     }
   };
+
   const handleMessageClick = () => {
-     navigate('/message'); 
+    navigate('/message');
+  };
+
+  const handleViewMessageClick = () => {
+    navigate('/view-message'); // Assuming you want to navigate to a "View Messages" page
   };
 
   return (
     <div className="box"> {/* Apply the 'box' class here to inherit the styles */}
       <h2>Patient Details</h2>
-  
+
       {/* Display loading state */}
       {loading && <p>Loading...</p>}
-  
+
       {/* Display error message */}
       {error && <p className="error">{error}</p>}
-  
+
       {/* Display patient details */}
       {patientDetails && (
         <div>
@@ -66,11 +71,17 @@ const PatientDetails = () => {
           <p><strong>Date of Birth:</strong> {patientDetails.dateOfBirth}</p>
         </div>
       )}
-  
-      {/* Message Button */}
-      <button className="message-btn" onClick={handleMessageClick}>
-        Send Message!
-      </button>
+
+      {/* Buttons for sending and viewing messages */}
+      <div className="buttons-container2">
+        <button className="message-btn2" onClick={handleMessageClick}>
+          Send Message!
+        </button>
+        
+        <button className="message-btn2" onClick={handleViewMessageClick}>
+          View Message!
+        </button>
+      </div>
     </div>
   );
 };

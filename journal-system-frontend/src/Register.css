@@ -19,19 +19,23 @@ body{
   align-items: center;
   text-align: center;
 }
-
+.register h2 {
+  color: #333333; /* Dark gray for the main heading */
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
 .register{
   max-width: 978px;
   width: 100vw;
   display:flex;
   border: 1px solid #e9ecef;
   border-radius: 5px;
-  /* box-shadow: 1px 3px 10px #e9ecef; */
   background-color: white;
 }
 
 .register span{
-  color: #adb5bd;
+  color: #00000090;
 }
 
 #form{

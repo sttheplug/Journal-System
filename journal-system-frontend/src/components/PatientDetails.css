@@ -39,18 +39,29 @@ strong {
     color: rgb(144, 146, 164); /* Make labels white */
     margin-right: 10px; /* Space between label and value */
 }
-.message-btn {
-  background-color: #236a8a; /* Blue background */
-  color: white; /* White text */
-  padding: 10px 20px; /* Add padding for better button size */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px; /* Adjust font size */
-  margin-top: 20px; /* Add space above the button */
-  transition: background-color 0.3s ease;
+
+.buttons-container2 {
+    display: flex;
+    gap: 20px; /* Adds space between the buttons */
+    justify-content: center; /* Centers the buttons horizontally */
+    align-items: center; /* Ensures vertical alignment */
+    margin-top: 40px; /* Adds some spacing above the buttons */
+    margin-left: 20px; /* Moves the buttons slightly to the right */
 }
 
-.message-btn:hover {
-  background-color: #113041; /* Darker blue when hovered */
+/* Individual Button */
+.message-btn2 {
+    background-color: #236a8a; /* Blue background */
+    color: white; /* White text */
+    padding: 10px 20px; /* Add padding for better button size */
+    border: none;
+    cursor: pointer;
+    font-size: 16px; /* Adjust font size */
+    transition: background-color 0.3s ease;
+    border-radius: 5px; /* Rounded corners for a smoother look */
+}
+
+/* Button Hover Effect */
+.message-btn2:hover {
+    background-color: #113041; /* Darker blue when hovered */
 }

@@ -22,14 +22,14 @@ const Login = () => {
       );
 
       if (response.status === 200) {
-        const { role, message, username } = response.data; // Destructure the response
+        const { role, message, username, id } = response.data; 
 
         localStorage.setItem('role', role);
-        localStorage.setItem('username', username); // You can also use sessionStorage here if you prefer
+        localStorage.setItem('username', username);
+        localStorage.setItem('userId', id); 
 
-        setMessage(message); // Display the response message
+        setMessage(message); 
 
-        // Redirect based on the user's role
         if (role === 'PATIENT') {
           navigate('/patient-details');
         } else if (role === 'DOCTOR') {
