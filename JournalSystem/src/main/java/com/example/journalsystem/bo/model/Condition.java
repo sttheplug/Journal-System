@@ -1,11 +1,11 @@
 package com.example.journalsystem.bo.model;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 @Entity
 @Table(name = "patient_condition")
 @Data
@@ -16,24 +16,27 @@ public class Condition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
-    private String name;
-    private String description;
-    private LocalDate onsetDate;
+
+    @Column(nullable = false)
+    private String diagnosis; // The name of the diagnosis
+
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    @Column(nullable = false)
+    private Status status; // Status of the diagnosis (ACTIVE or RESOLVED)
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    private Patient patient; // Reference to the associated patient
 
+    // Enum for diagnosis status
     public enum Status {
-        ACTIVE, INACTIVE, RESOLVED
+        ACTIVE, RESOLVED
     }
-    public Condition(String name, String description, LocalDate onsetDate, Status status, Patient patient) {
-        this.name = name;
-        this.description = description;
-        this.onsetDate = onsetDate;
+
+    // Constructor to initialize the fields
+    public Condition(String diagnosis, Status status, Patient patient) {
+        this.diagnosis = diagnosis;
         this.status = status;
         this.patient = patient;
     }

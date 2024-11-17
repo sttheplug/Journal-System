@@ -5,8 +5,10 @@ import { useNavigate } from 'react-router-dom';
 
 const StaffDashboard = () => {
   const [patients, setPatients] = useState([]);
+  const [messages, setMessages] = useState([]); // Store the messages for the user
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -19,12 +21,39 @@ const StaffDashboard = () => {
       }
     };
 
+    // Fetch messages for the logged-in user
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/messages/recipient', {
+          headers: {
+            userId: userId,  
+          },
+        });
+        setMessages(response.data);  
+      } catch (err) {
+        setError('Failed to load messages.');
+      }
+    };
+
     fetchPatients();
-  }, []);
+    fetchMessages();
+  }, [userId]);
 
   const handlePatientClick = (patientId) => {
-    // Redirect to the PatientDetails page with the patient ID as a route parameter
     navigate(`/patient-details/${patientId}`);
+  };
+
+  const handleViewMessageClick = (patientId, e) => {
+    e.stopPropagation(); 
+    localStorage.setItem("recipientId",patientId);
+    navigate(`/view-respond/${patientId}`);
+  };
+
+  const hasMessageFromPatient = (patientId) => {
+    if (!messages || messages.length === 0) {
+      return false; 
+    }
+    return messages.some((message) => message.sender.id === patientId);  
   };
 
   return (
@@ -37,10 +66,22 @@ const StaffDashboard = () => {
             <div
               key={patient.id}
               className="patient-item"
-              onClick={() => handlePatientClick(patient.id)} // Pass patient ID on click
+              onClick={() => handlePatientClick(patient.id)} 
             >
-              <span className="patient-name">{patient.username}</span>
-              <span className="patient-role">{patient.role}</span>
+              <div className="patient-info">
+                <span className="patient-name">{patient.username}</span>
+                <span className="patient-role">{patient.role}</span>
+              </div>
+
+              {/* Conditionally render the "View Message!" button */}
+              {hasMessageFromPatient(patient.id) && (
+                <button
+                  className="message-btn"
+                  onClick={(e) => handleViewMessageClick(patient.id, e)}
+                >
+                  View Message!
+                </button>
+              )}
             </div>
           ))
         ) : (

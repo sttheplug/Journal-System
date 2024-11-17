@@ -22,10 +22,10 @@ const Login = () => {
       );
 
       if (response.status === 200) {
-        const { role, message, username } = response.data; // Destructure the response
-
+        const { role, message, username, id} = response.data; // Destructure the response
         localStorage.setItem('role', role);
         localStorage.setItem('username', username); // You can also use sessionStorage here if you prefer
+        localStorage.setItem('userId', id);
 
         setMessage(message); // Display the response message
 
@@ -35,7 +35,7 @@ const Login = () => {
         } else if (role === 'DOCTOR') {
           navigate('/staff-dashboard');
         } else if (role === 'STAFF') {
-          // Add logic for staff if necessary
+          navigate('/staff-dashboard');
         } else {
           navigate('/'); // Fallback in case of an unknown role
         }

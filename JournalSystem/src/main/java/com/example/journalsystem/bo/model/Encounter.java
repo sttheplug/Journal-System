@@ -1,4 +1,5 @@
 package com.example.journalsystem.bo.model;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -6,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -27,12 +27,12 @@ public class Encounter {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Observation> observations;
-    public Encounter(LocalDateTime dateTime, String reason, Patient patient) {
+    private String notes; // This replaces observations list with a single "notes" column
+
+    public Encounter(LocalDateTime dateTime, String reason, Patient patient, String notes) {
         this.dateTime = dateTime;
         this.reason = reason;
         this.patient = patient;
+        this.notes = notes;
     }
 }
-

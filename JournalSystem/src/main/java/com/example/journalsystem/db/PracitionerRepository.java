@@ -1,4 +1,4 @@
-package com.example.journalsystem.model;
+package com.example.journalsystem.db;
 
 import com.example.journalsystem.bo.model.Practitioner;
 import org.springframework.data.jpa.repository.JpaRepository;

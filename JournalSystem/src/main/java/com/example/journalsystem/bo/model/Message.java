@@ -13,11 +13,11 @@ public class Message {
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recipient_id", nullable = false)
     private User recipient;
 
