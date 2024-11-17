@@ -50,6 +50,9 @@ const StaffDashboard = () => {
   };
 
   const hasMessageFromPatient = (patientId) => {
+    if (!messages || messages.length === 0) {
+      return false; 
+    }
     return messages.some((message) => message.sender.id === patientId);  
   };
 

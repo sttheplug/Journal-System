@@ -35,9 +35,9 @@ const Login = () => {
         } else if (role === 'DOCTOR') {
           navigate('/staff-dashboard');
         } else if (role === 'STAFF') {
-          // Add logic for staff if necessary
+          navigate('/staff-dashboard');
         } else {
-          navigate('/'); // Fallback in case of an unknown role
+          navigate('/'); 
         }
       }
     } catch (error) {

@@ -1,10 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './Respond.css'; // Import App.css to access the styles
 
 const ViewMessagePatient = () => {
   const [messages, setMessages] = useState([]);
   const [responses, setResponses] = useState({}); // To hold response texts for each message
   const [error, setError] = useState('');
+
+  // Helper function to format LocalDateTime into a readable format
+  const formatDateTime = (dateTimeString) => {
+    if (!dateTimeString) {
+      return 'Invalid date';
+    }
+
+    try {
+      // Assuming the date format is "yyyy-MM-dd'T'HH:mm:ss" (ISO format)
+      const [datePart, timePart] = dateTimeString.split('T');
+      const [year, month, day] = datePart.split('-');
+      const [hour, minute, second] = timePart.split(':');
+      
+      // Create a Date object to manipulate the time
+      const date = new Date(year, month - 1, day, hour, minute, second);
+      
+      // Use toLocaleString() to display the date in a readable format
+      return date.toLocaleString(); // This will return a human-readable date and time
+    } catch (err) {
+      console.error('Error formatting date:', err);
+      return 'Invalid date format';
+    }
+  };
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -55,7 +79,7 @@ const ViewMessagePatient = () => {
       const recipientId = localStorage.getItem("recipientId");
         await axios.post(
             `http://localhost:8080/api/practitioners/${recipientId}/message?senderId=${senderId}`,
-        {responseContent}
+        { responseContent }
       );
   
       alert('Response sent successfully!');
@@ -77,10 +101,10 @@ const ViewMessagePatient = () => {
         {messages.length > 0 ? (
           messages.map((message) => (
             <div key={message.id} className="message-box">
-              <p><strong>Sender:</strong> {message.senderName}</p>
+              {/* Removed Sender Name */}
               <p><strong>Message:</strong> {message.content}</p>
-              <p><strong>Date:</strong> {message.date}</p>
-
+              <p><strong>Date:</strong> {formatDateTime(message.sentAt)}</p>  {/* Corrected field name */}
+  
               {/* Response Form */}
               <div className="response-form">
                 <textarea
@@ -99,7 +123,7 @@ const ViewMessagePatient = () => {
         )}
       </div>
     </div>
-  );
+  );  
 };
 
 export default ViewMessagePatient;
