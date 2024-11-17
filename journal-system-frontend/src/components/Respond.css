@@ -2,7 +2,7 @@
 .box {
     width: 500px; /* Adjust width for better readability */
     padding: 30px;
-    background-color: #121212; /* Black background for the box */
+    background-color: #121212e1; /* Black background for the box */
     box-shadow: 0 15px 25px rgba(0, 0, 0, 0.8); /* Deep shadow for depth */
     border-radius: 5px;
     color: white; /* White text for everything inside the box */
