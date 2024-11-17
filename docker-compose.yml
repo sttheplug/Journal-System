@@ -3,49 +3,41 @@ version: '3.8'
 services:
   db:
     image: mysql:8.0
-    container_name: journal_mysql
+    container_name: db
     ports:
-      - "3306:3306"  # Expose MySQL to localhost so that you can connect from your system
+      - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: journaldb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: Aprilapril23.
+    restart: unless-stopped
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - journal_network
 
   backend:
     build:
-      context: ./JournalSystem # Corrected to reflect the backend directory name
+      context: ./JournalSystem
       dockerfile: Dockerfile
-    container_name: journal_backend
+    container_name: backend
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/journaldb
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: Aprilapril23.
+      SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       - db
-    networks:
-      - journal_network
+    restart: unless-stopped
 
   frontend:
     build:
-      context: ./journal-system-frontend # Corrected to reflect the frontend directory name
+      context: ./journal-system-frontend
       dockerfile: Dockerfile
-    container_name: journal_frontend
+    container_name: frontend
     ports:
       - "3000:80"
     depends_on:
       - backend
-    networks:
-      - journal_network
+    restart: unless-stopped
 
 volumes:
   db_data:
-
-networks:
-  journal_network:
